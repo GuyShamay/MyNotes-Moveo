@@ -26,6 +26,7 @@ function NotesList({ navigation }) {
   const { user } = useContext(AuthenticatedUserContext);
 
   const [notes, setNotes] = useState([]);
+  const [hasNotes, setHasNotes] = useState(true);
 
   const openNoteDetail = (item) => {
     navigation.push("Note", { name: item.title, note: item, status: "edit" });
@@ -48,24 +49,37 @@ function NotesList({ navigation }) {
       newNotes.push(note);
     });
     setNotes(newNotes);
+
+    if (newNotes.length === 0) {
+      setHasNotes(false);
+    } else {
+      setHasNotes(true);
+    }
   };
 
   return (
     <View style={styles.container}>
       <Text style={styles.header}>Notes List</Text>
-      <FlatList
-        data={notes}
-        style={styles.list}
-        renderItem={({ item }) => (
-          <TouchableOpacity
-            style={styles.noteBox}
-            onPress={() => openNoteDetail(item)}
-          >
-            <Text style={styles.title}>{item.title}</Text>
-            <Text style={styles.date}>{formatDate(item.date)}</Text>
-          </TouchableOpacity>
-        )}
-      />
+      {hasNotes && (
+        <FlatList
+          data={notes}
+          style={styles.list}
+          renderItem={({ item }) => (
+            <TouchableOpacity
+              style={styles.noteBox}
+              onPress={() => openNoteDetail(item)}
+            >
+              <Text style={styles.title}>{item.title}</Text>
+              <Text style={styles.date}>{formatDate(item.date)}</Text>
+            </TouchableOpacity>
+          )}
+        />
+      )}
+      {!hasNotes && (
+        <Text style={{ fontSize: 25, fontWeight: "400", alignSelf: "center" }}>
+          No Notes Found
+        </Text>
+      )}
       <TouchableOpacity
         style={styles.add}
         onPress={() =>
